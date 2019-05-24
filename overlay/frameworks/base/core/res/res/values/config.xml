@@ -75,6 +75,12 @@
     <!-- Boolean indicating whether 802.11r Fast BSS Transition is enabled on this platform -->
     <bool translatable="false" name="config_wifi_fast_bss_transition_enabled">true</bool>
 
+    <!-- True if the firmware supports Wi-Fi link probing -->
+    <bool name="config_wifi_link_probing_supported">true</bool>
+
+    <!-- True if the firmware supports p2p MAC randomization -->
+    <bool name="config_wifi_p2p_mac_randomization_supported">true</bool>
+
     <!-- Boolean indicating whether the wifi chipset supports background scanning mechanism.
          This mechanism allows the host to remain in suspend state and the dongle to actively
          scan and wake the host when a configured SSID is detected by the dongle. This chipset
@@ -471,7 +477,4 @@
 
     <!-- default refresh rate in the zone defined by brightness and ambient thresholds -->
     <integer name="config_defaultRefreshRateInZone">90</integer>
-
-    <!-- True if the firmware supports Wi-Fi link probing -->
-    <bool name="config_wifi_link_probing_supported">true</bool>
 </resources>
