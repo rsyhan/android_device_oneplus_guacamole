@@ -60,4 +60,7 @@
 
     <!-- Whether device has screen with higher aspect ratio -->
     <bool name="config_haveHigherAspectRatioScreen">true</bool>
+
+    <!-- Does the device have a notification/battery LED? -->
+    <bool name="config_deviceHasLED">false</bool>
 </resources>
