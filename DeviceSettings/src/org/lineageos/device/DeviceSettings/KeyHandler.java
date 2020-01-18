@@ -38,6 +38,7 @@ import android.os.PowerManager.WakeLock;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.SystemProperties;
+import android.os.UserHandle;
 import android.os.Vibrator;
 import android.os.VibrationEffect;
 import android.provider.Settings;
@@ -58,6 +59,7 @@ public class KeyHandler implements DeviceKeyHandler {
     private static final boolean DEBUG = false;
     private static final int GESTURE_REQUEST = 1;
     private static String FPNAV_ENABLED_PROP = "sys.fpnav.enabled";
+    private static final String DOZE_INTENT = "com.android.systemui.doze.pulse";
 
     private static final SparseIntArray sSupportedSliderZenModes = new SparseIntArray();
     private static final SparseIntArray sSupportedSliderRingModes = new SparseIntArray();
@@ -77,6 +79,9 @@ public class KeyHandler implements DeviceKeyHandler {
 
     public static final String CLIENT_PACKAGE_NAME = "com.oneplus.camera";
     public static final String CLIENT_PACKAGE_PATH = "/data/misc/aosp/client_package_name";
+
+    // Single tap key code
+    private static final int SINGLE_TAP = 67;
 
     private final Context mContext;
     private final PowerManager mPowerManager;
@@ -139,36 +144,28 @@ public class KeyHandler implements DeviceKeyHandler {
     }
 
     public KeyEvent handleKeyEvent(KeyEvent event) {
-        final int scanCode = event.getScanCode();
-        final int currentRingerMode = mAudioManager.getRingerModeInternal();
+        int scanCode = event.getScanCode();
+        String keyCode = Constants.sKeyMap.get(scanCode);
 
-        switch (scanCode) {
-            case MODE_NORMAL:
-                if (currentRingerMode != AudioManager.RINGER_MODE_NORMAL) {
-                    doHapticFeedback(VibrationEffect.EFFECT_DOUBLE_CLICK);
-                    mAudioManager.setRingerModeInternal(AudioManager.RINGER_MODE_NORMAL);
-                } else {
-                    return event;
-                }
-                break;
-            case MODE_VIBRATION:
-                if (currentRingerMode != AudioManager.RINGER_MODE_VIBRATE) {
-                    doHapticFeedback(VibrationEffect.EFFECT_THUD);
-                    mAudioManager.setRingerModeInternal(AudioManager.RINGER_MODE_VIBRATE);
-                } else {
-                    return event;
-                }
-                break;
-            case MODE_SILENCE:
-                if (currentRingerMode != AudioManager.RINGER_MODE_SILENT) {
-                    doHapticFeedback(VibrationEffect.EFFECT_POP);
-                    mAudioManager.setRingerModeInternal(AudioManager.RINGER_MODE_SILENT);
-                } else {
-                    return event;
-                }
-                break;
-            default:
-                return event;
+        if (scanCode == SINGLE_TAP) {
+            launchDozePulse();
+            return null;
+        }
+        
+        int keyCodeValue = 0;
+        try {
+            keyCodeValue = Constants.getPreferenceInt(mContext, keyCode);
+        } catch (Exception e) {
+             return event;
+        }
+
+        if (!hasSetupCompleted()) {
+            return event;
+        }
+
+        // We only want ACTION_UP event
+        if (event.getAction() != KeyEvent.ACTION_UP) {
+            return null;
         }
 
         mAudioManager.setRingerModeInternal(sSupportedSliderRingModes.get(keyCodeValue));
@@ -227,5 +224,11 @@ public class KeyHandler implements DeviceKeyHandler {
                 }
             }
         }
+    }
+
+    private void launchDozePulse() {
+        // Note: Only works with ambient display enabled.
+        mContext.sendBroadcastAsUser(new Intent(DOZE_INTENT),
+                new UserHandle(UserHandle.USER_CURRENT));
     }
 }
