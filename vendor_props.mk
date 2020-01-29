@@ -7,3 +7,9 @@
 # Display
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.sf.lcd_density=560
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.vendor.build.release_type=release \
+    ro.vendor.build.real.device=true \
+    vendor.product.device=guacamole \
+    vendor.product.manufacturer=oneplus
