@@ -1,2 +1,4 @@
 # Allow system_app to read, open and get attributes of vendor_default_prop
 allow system_app vendor_default_prop:file { getattr open read };
+
+allow system_app sysfs_graphics:file r_file_perms;
