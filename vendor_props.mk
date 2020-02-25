@@ -14,6 +14,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     audio.offload.video=true \
     persist.vendor.audio.fluence.speaker=true \
     persist.vendor.audio.fluence.voicecall=true \
+    persist.vendor.audio.fluence.voicecomm=true \
     persist.vendor.audio.fluence.voicerec=true \
     persist.vendor.audio.ras.enabled=false \
     persist.vendor.audio.voicecall.speaker.stereo=true \
