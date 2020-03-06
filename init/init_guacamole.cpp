@@ -25,6 +25,8 @@
    IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <sys/sysinfo.h>
+#include <android-base/logging.h>
 #include <stdlib.h>
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <sys/_system_properties.h>
@@ -53,9 +55,50 @@ void property_override_system_and_vendor(char const system_prop[], char const ve
     property_override(vendor_prop, value);
 }
 
+void dalvik_vm_setup_12()
+{
+    property_override("dalvik.vm.heapstartsize","24m");
+    property_override("dalvik.vm.heapgrowthlimit","384m");
+    property_override("dalvik.vm.heaptargetutilization","0.42");
+    property_override("dalvik.vm.heapmaxfree","56m");
+}
+
+void dalvik_vm_setup_8()
+{
+    property_override("dalvik.vm.heapstartsize","24m");
+    property_override("dalvik.vm.heapgrowthlimit","256m");
+    property_override("dalvik.vm.heaptargetutilization","0.46");
+    property_override("dalvik.vm.heapmaxfree","48m");
+}
+
+void dalvik_vm_setup_6()
+{
+    property_override("dalvik.vm.heapstartsize","16m");
+    property_override("dalvik.vm.heapgrowthlimit","256m");
+    property_override("dalvik.vm.heaptargetutilization","0.5");
+    property_override("dalvik.vm.heapmaxfree","32m");
+}
+
+/* Setup Dalvik VM For Different Variants */
+void dalvik_vm_setup()
+{
+    struct sysinfo sys;
+    sysinfo(&sys);
+    if (sys.totalram > 8192ull * 1024 * 1024) {
+        dalvik_vm_setup_12();
+    }
+    else if(sys.totalram > 6144ull * 1024 * 1024){
+        dalvik_vm_setup_8();
+    }
+    else if(sys.totalram > 4096ull * 1024 * 1024){
+        dalvik_vm_setup_6();
+    }
+}
+
 void vendor_load_properties()
 {
     // Fingerprint Property Overrides
     property_override("ro.build.description", "OnePlus7Pro-user 10 QKQ1.190716.003 1909110008 release-keys");
     property_override_system_and_vendor("ro.build.fingerprint", "ro.vendor.build.fingerprint", "google/coral/coral:10/QQ2A.200305.003/6156912:user/release-keys");
+    dalvik_vm_setup();
 }
