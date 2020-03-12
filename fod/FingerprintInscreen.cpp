@@ -20,6 +20,7 @@
 #include <android-base/logging.h>
 #include <hidl/HidlTransportSupport.h>
 #include <fstream>
+#include <cmath>
 
 #define FINGERPRINT_ACQUIRED_VENDOR 6
 #define FINGERPRINT_ERROR_VENDOR 8
@@ -35,7 +36,8 @@
 
 // This is not a typo by me. It's by OnePlus.
 #define HBM_ENABLE_PATH "/sys/class/drm/card0-DSI-1/op_friginer_print_hbm"
-#define DIM_AMOUNT_PATH "/sys/class/drm/card0-DSI-1/dim_alpha"
+// define DIM_AMOUNT_PATH "/sys/class/drm/card0-DSI-1/dim_alpha"
+#define BRIGHTNESS_PATH "/sys/class/backlight/panel0-backlight/brightness"
 
 namespace vendor {
 namespace lineage {
@@ -155,10 +157,9 @@ Return<void> FingerprintInscreen::setLongPressEnabled(bool enabled) {
 }
 
 Return<int32_t> FingerprintInscreen::getDimAmount(int32_t) {
-    int dimAmount = get(DIM_AMOUNT_PATH, 0);
-    LOG(INFO) << "dimAmount = " << dimAmount;
-
-    return dimAmount;
+    int brightness = get(BRIGHTNESS_PATH, 0);
+    float alpha = 1.0 - pow(brightness / 1023.0f, 0.455);
+    return 255.0f * alpha;
 }
 
 Return<bool> FingerprintInscreen::shouldBoostBrightness() {
