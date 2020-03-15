@@ -1,0 +1,2 @@
+# Allow system_app to read, open and get attributes of vendor_default_prop
+allow system_app vendor_default_prop:file { getattr open read };

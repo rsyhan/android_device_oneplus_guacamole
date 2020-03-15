@@ -2,3 +2,7 @@ allow system_server hal_cameraHIDL_hwservice:hwservice_manager find;
 binder_call(system_server, hal_cameraHIDL_default)
 get_prop(system_server, persist_camera_prop)
 get_prop(system_server, vendor_camera_prop)
+allow system_server sysfs_battery_supply:dir search;
+allow system_server sysfs_battery_supply:file { read getattr open };
+allow system_server sysfs_usb_supply:dir search;
+allow system_server sysfs_usb_supply:file { read getattr open };

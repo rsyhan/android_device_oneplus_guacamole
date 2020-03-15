@@ -14,6 +14,9 @@ allow hal_camera_default vl53l1_device:chr_file rw_file_perms;
 # Properties
 set_prop(hal_camera_default, vendor_camera_prop)
 
+# Binder calls to system_server
+binder_call(hal_camera_default, system_server)
+
 # Access to /dev/input/event{5,10}
 allow hal_camera_default input_device:dir r_dir_perms;
 allow hal_camera_default input_device:chr_file r_file_perms;
